@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectedClan } from '$lib/stores';
+	import { selectedClan, loadingData } from '$lib/stores';
 	import {
 		getClan,
 		getClanMemberNames,
@@ -13,12 +13,12 @@
 		type activeClanBattle
 	} from '$lib/get-ps99-data';
 	import { getClanDetails, getRobloxUsers, type dbClan } from '$lib/database';
-	import { convertNumberToMultiples } from '$lib/utils';
 	import { faArrowLeft, faCheck } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount, tick } from 'svelte';
 	import ClanMemberTotals from './ClanMemberTotals.svelte';
 	import ClanMemberCurrent from './ClanMemberCurrent.svelte';
+	import TablePlaceholder from './TablePlaceholder.svelte';
 
 	let selectedPastClanDetails: dbClan[] = [];
 	let currentClanDetails: clanData;
@@ -26,14 +26,14 @@
 	let activeClanBattle: activeClanBattle;
 	let container: HTMLDivElement;
 	let levelOfDetail = 'Current Battle';
-	let loading = false;
 
 	function section(c: string) {
 		levelOfDetail = c;
 	}
 
 	onMount(async () => {
-		loading = true;
+		loadingData.set(true);
+		await tick();
 		container.scrollIntoView({ behavior: 'smooth' });
 		// Wait for stores to be initialized
 		await tick();
@@ -57,7 +57,7 @@
 				a.Points.reduce((total, item) => total + item.Points, 0)
 			);
 		});
-		loading = false;
+		loadingData.set(false);
 	});
 </script>
 
@@ -86,26 +86,14 @@
 		</button>
 	{/each}
 </div>
-{#if clanMemberFullDetails.length > 0}
+{#if $loadingData}
+	<TablePlaceholder />
+{:else if clanMemberFullDetails.length > 0}
 	{#if levelOfDetail === 'Current Battle'}
 		<ClanMemberCurrent {clanMemberFullDetails} {activeClanBattle} {selectedPastClanDetails} />
 	{:else if levelOfDetail === 'Totals'}
 		<ClanMemberTotals {clanMemberFullDetails} />
 	{/if}
-{:else if loading}
-	<div class="placeholder animate-pulse mx-5 my-5">
-		{#each Array(75) as _}
-			<section class="card w-full">
-				<div class="p-4 space-y-4">
-					<div class="grid grid-cols-3 gap-8">
-						<div class="placeholder" />
-						<div class="placeholder" />
-						<div class="placeholder" />
-					</div>
-				</div>
-			</section>
-		{/each}
-	</div>
 {:else if !$selectedClan}
 	<div class="placeholder-container">
 		<p class="placeholder-text">Please select a clan</p>

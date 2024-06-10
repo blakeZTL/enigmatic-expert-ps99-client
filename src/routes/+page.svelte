@@ -1,7 +1,8 @@
 <script lang="ts">
 	import ClanTotals from '$lib/components/ClanTotals.svelte';
 	import ClanDetails from '$lib/components/ClanDetails.svelte';
-	import { selectedClan } from '$lib/stores';
+	import { selectedClan, loadingData } from '$lib/stores';
+	import TablePlaceholder from '$lib/components/TablePlaceholder.svelte';
 </script>
 
 {#if $selectedClan !== ''}

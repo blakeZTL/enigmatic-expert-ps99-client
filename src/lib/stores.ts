@@ -18,3 +18,4 @@ export const clanTotals = readable<dbClanTotal[]>([], (set) => {
 export const selectedClan = writable<string>('');
 
 export const selectedUser = writable<string>('');
+export const loadingData = writable<boolean>(true);
