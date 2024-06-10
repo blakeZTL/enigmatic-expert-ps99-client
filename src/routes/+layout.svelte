@@ -21,8 +21,17 @@
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
+
+	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
+
+	// Modal
+	import { initializeStores, Modal } from '@skeletonlabs/skeleton';
+	initializeStores();
 </script>
 
+<Modal />
+<Toast />
 <!-- App Shell -->
 <AppShell>
 	<svelte:fragment slot="header">

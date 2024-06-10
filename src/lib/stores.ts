@@ -1,5 +1,5 @@
 // src/stores.ts
-import { readable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import { getRobloxUsers, getClanTotals, type dbClanTotal, type dbRobloxUser } from '$lib/database';
 
 // Create a readable store for robloxUsers
@@ -14,3 +14,7 @@ export const clanTotals = readable<dbClanTotal[]>([], (set) => {
 		set(fetchedTotals);
 	});
 });
+
+export const selectedClan = writable<string>('');
+
+export const selectedUser = writable<string>('');

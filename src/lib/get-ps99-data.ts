@@ -1,3 +1,8 @@
+export interface MemberPoints {
+	createdOn: Date;
+	points: number;
+}
+
 export interface robloxUserData {
 	id: number;
 	hasVerifiedBadge: boolean;
@@ -32,7 +37,7 @@ interface PointContribution {
 	Points: number;
 }
 
-interface Battle {
+export interface Battle {
 	ProcessedAwards: boolean;
 	AwardUserIDs: number[];
 	BattleID: string;

@@ -1,5 +1,5 @@
 import { getApps, type FirebaseApp } from 'firebase/app';
-import { getFirestore, getDocs, collection } from 'firebase/firestore';
+import { getFirestore, getDocs, collection, query, where } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
@@ -25,7 +25,7 @@ if (!getApps().length) {
 }
 const db = getFirestore(app);
 
-import { type robloxUserData, type clansData } from './get-ps99-data';
+import type { robloxUserData, clansData, clanData } from './get-ps99-data';
 
 export interface dbRobloxUser {
 	id: string;
@@ -39,13 +39,19 @@ export interface dbClanTotal {
 	data: clansData;
 }
 
+export interface dbClan {
+	id: string;
+	created_on: Date;
+	data: clanData;
+}
+
 function parse_id_for_date(id: string) {
 	const dateStr = id.split('||')[1];
 	const date = new Date(dateStr);
 	return date;
 }
 
-export async function getRobloxUsers() {
+export async function getRobloxUsers(): Promise<dbRobloxUser[]> {
 	let robloxUsers: dbRobloxUser[] = [];
 	try {
 		console.log('Starting to fetch data...');
@@ -62,7 +68,7 @@ export async function getRobloxUsers() {
 	}
 }
 
-export async function getClanTotals() {
+export async function getClanTotals(): Promise<dbClanTotal[]> {
 	let clanTotals: dbClanTotal[] = [];
 	try {
 		const querySnapshot = await getDocs(collection(db, 'clan_totals'));
@@ -75,6 +81,23 @@ export async function getClanTotals() {
 		console.error('Failed to fetch clan totals', error);
 	} finally {
 		return clanTotals;
+	}
+}
+
+export async function getClanDetails(clanName: string): Promise<dbClan[]> {
+	let clanDetails: dbClan[] = [];
+	try {
+		const clanQuery = query(collection(db, 'clans'), where('Name', '==', clanName));
+		const querySnapshot = await getDocs(clanQuery);
+		clanDetails = querySnapshot.docs.map((doc) => {
+			const data = doc.data();
+			return { id: doc.id, created_on: parse_id_for_date(doc.id), data: data as clanData };
+		});
+		console.log('Fetched clan details:');
+	} catch (error) {
+		console.error('Failed to fetch clan details', error);
+	} finally {
+		return clanDetails;
 	}
 }
 

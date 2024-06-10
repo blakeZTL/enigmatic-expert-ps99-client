@@ -9,6 +9,7 @@
 	import { getClanTotals, type dbClanTotal } from '$lib/database';
 	import { onMount, tick } from 'svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { selectedClan } from '$lib/stores';
 
 	let recordSelectedByPoints: clansData | null = null;
 	const popupPointsClick: PopupSettings = {
@@ -25,6 +26,11 @@
 				record.created_on >= currentBattleStart && record.created_on <= currentBattleFinish
 		);
 		return currentBattleRecords;
+	}
+
+	function selectClan(clanName: string) {
+		selectedClan.set(clanName);
+		// set window to top of page
 	}
 
 	let pastClanTotals: dbClanTotal[] = [];
@@ -57,38 +63,56 @@
 	});
 </script>
 
-<div class="table-container mx-5 my-5">
-	<!-- Native Table Element -->
-	<table class="table table-hover">
-		<thead>
-			<tr>
-				<th></th>
-				<th>Members</th>
-				<th id="clanDiamondsHeader">Diamonds</th>
-				<th id="clanPointsHeader">Points</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each currentClanTotals as row, i}
-				<!-- on:click={() => selectClan(row.data.Name)} -->
+<div class="m-5">
+	<div class="table-container">
+		<!-- Native Table Element -->
+		<table class="table table-hover">
+			<thead>
 				<tr>
-					<td class="cursor-default">{`${i + 1}. ${row.Name}`}</td>
-					<td class="cursor-default">{row.Members}</td>
-					<td class="cursor-default">{convertNumberToMultiples(row.DepositedDiamonds)}</td>
-					<td>
-						<button
-							type="button"
-							class="btn btn-sm variant-ghost-primary"
-							use:popup={popupPointsClick}
-							on:click={() => (recordSelectedByPoints = row)}
-						>
-							{convertNumberToMultiples(row.Points)}</button
-						></td
-					>
+					<th></th>
+					<th class="text-center">Members</th>
+					<th id="clanDiamondsHeader" class="text-center">Diamonds</th>
+					<th id="clanPointsHeader" class="text-center">Points</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each currentClanTotals as row, i}
+					<!--  -->
+					<tr>
+						<td class="text-center w-44">
+							{i + 1}.
+							<button
+								class="btn bg-gradient-to-br variant-gradient-secondary-primary ml-3"
+								on:click={() => selectClan(row.Name)}
+							>
+								{row.Name}
+							</button>
+						</td>
+						<td class="text-center cursor-default w-44">
+							<button type="button" class="btn bg-initial cursor-default">
+								{row.Members + 1}
+							</button>
+						</td>
+						<td class="text-center cursor-default">
+							<button type="button" class="btn bg-initial cursor-default">
+								{convertNumberToMultiples(row.DepositedDiamonds)}
+							</button>
+						</td>
+						<td class="text-center">
+							<button
+								type="button"
+								class="btn btn-sm variant-ghost-primary"
+								use:popup={popupPointsClick}
+								on:click={() => (recordSelectedByPoints = row)}
+							>
+								{convertNumberToMultiples(row.Points)}</button
+							></td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 <div class="card p-4 w-auto shadow-xl" data-popup="popupPointsClick">
@@ -146,3 +170,6 @@
 	</div>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
+
+<style>
+</style>
