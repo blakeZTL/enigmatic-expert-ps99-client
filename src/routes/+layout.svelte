@@ -10,6 +10,8 @@
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 	hljs.registerLanguage('xml', xml); // for HTML
 	hljs.registerLanguage('css', css);
@@ -41,12 +43,12 @@
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="https://github.com/skeletonlabs/skeleton"
+					class="btn icon variant-ghost-surface"
+					href="https://github.com/blakeZTL/enigmatic-expert-ps99-client"
 					target="_blank"
 					rel="noreferrer"
 				>
-					GitHub
+					<FontAwesomeIcon icon={faGithub} />
 				</a>
 			</svelte:fragment>
 		</AppBar>
