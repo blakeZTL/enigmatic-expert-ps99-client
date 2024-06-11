@@ -11,6 +11,9 @@
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { selectedClan, loadingData, isDuringActiveClanBattle } from '$lib/stores';
 	import TablePlaceholder from './TablePlaceholder.svelte';
+	import { Autocomplete } from '@skeletonlabs/skeleton';
+	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
+	import { writable } from 'svelte/store';
 
 	let recordSelectedByPoints: clansData | null = null;
 	const popupPointsClick: PopupSettings = {
@@ -40,6 +43,25 @@
 	let currentClanBattle: activeClanBattle;
 	let currentBattleStart: Date;
 	let currentBattleFinish: Date;
+	const clanNames = writable<string[]>([]);
+	let clanNamesAutocomplete: AutocompleteOption<string>[] = $clanNames.map((clanName) => ({
+		label: clanName,
+		value: clanName
+	}));
+	$: clanNamesAutocomplete = $clanNames.map((clanName) => ({
+		label: clanName,
+		value: clanName
+	}));
+	let clanNameSearch = '';
+
+	// function searchClanName(event: CustomEvent<AutocompleteOption<string>>) {
+	// 	clanNameSearch = event.detail.label;
+	// }
+	// let clanSearchPopupSettings: PopupSettings = {
+	// 	event: 'focus-click',
+	// 	target: 'clanSearchPopupAutocomplete',
+	// 	placement: 'bottom'
+	// };
 
 	$: console.debug('Loading...', $loadingData);
 
@@ -51,6 +73,9 @@
 		pastClanTotals = await getClanTotals();
 		const currentClansData = await getClans();
 		currentClanTotals = currentClansData.data as clansData[];
+		clanNames.set(currentClanTotals.map((clan) => clan.Name));
+		console.debug(clanNamesAutocomplete);
+		console.debug($clanNames);
 
 		const activeClanBattleData = await getActiveClanBattle();
 		currentClanBattle = activeClanBattleData.data as activeClanBattle;
@@ -72,6 +97,23 @@
 	{#if $loadingData}
 		<TablePlaceholder />
 	{:else}
+		<input
+			class="input mb-3"
+			type="search"
+			name="clanSearch"
+			bind:value={clanNameSearch}
+			placeholder="Search..."
+		/>
+		<!-- <div
+			data-popup="clanSearchPopupAutocomplete"
+			class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto"
+		>
+			<Autocomplete
+				bind:input={clanNameSearch}
+				options={clanNamesAutocomplete}
+				on:selection={searchClanName}
+			/>
+		</div> -->
 		<div class="table-container">
 			<table class="table table-hover">
 				<thead>
@@ -86,7 +128,7 @@
 				</thead>
 
 				<tbody>
-					{#each currentClanTotals as row, i}
+					{#each currentClanTotals.filter((clan) => clan.Name && clan.Name.toUpperCase().includes(clanNameSearch.toUpperCase())) as row, i}
 						<!--  -->
 						<tr>
 							<td class="text-center w-44">
