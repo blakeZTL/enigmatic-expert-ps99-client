@@ -39,7 +39,7 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">EnigmaticExpert's PS99 App</strong>
+				<strong class="text-xl uppercase">Clan Battle Stats</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<a

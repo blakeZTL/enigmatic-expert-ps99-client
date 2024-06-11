@@ -7,6 +7,7 @@
 		MemberPoints
 	} from '$lib/get-ps99-data';
 	import type { dbClan } from '$lib/database';
+	import { isDuringActiveClanBattle } from '$lib/stores';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import ClanMemberHourlyDetails from './ClanMemberHourlyDetails.svelte';
@@ -84,7 +85,9 @@
 			<thead>
 				<tr>
 					<th>{activeClanBattle.configData.Title}</th>
-					<th class="text-center">Diamonds</th>
+					{#if !$isDuringActiveClanBattle}
+						<th class="text-center">Diamonds</th>
+					{/if}
 					<th class="text-center table-sort-dsc">Total Points</th>
 				</tr>
 			</thead>
@@ -92,15 +95,17 @@
 				{#each currentBattleData as member, i}
 					<tr>
 						<td
-							><button type="button" class="btn bg-initial cursor-default text-center">
+							><button type="button" class="btn bg-initial cursor-default">
 								{`${i + 1}. ${member.name}`}
 							</button></td
 						>
-						<td class=" text-center"
-							><button type="button" class="btn bg-initial cursor-default">
-								{convertNumberToMultiples(member.Diamonds)}
-							</button></td
-						>
+						{#if !$isDuringActiveClanBattle}
+							<td class=" text-center"
+								><button type="button" class="btn bg-initial cursor-default">
+									{convertNumberToMultiples(member.Diamonds)}
+								</button></td
+							>
+						{/if}
 						<td class=" text-center">
 							<button
 								type="button"

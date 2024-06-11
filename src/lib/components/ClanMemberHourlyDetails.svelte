@@ -6,13 +6,13 @@
 	export let selectedPastClanDetails: MemberPoints[];
 </script>
 
-<div class="card w-[400px] cursor-default">
+<div class="card max-w-[400px] cursor-default my-20">
 	<section class="p-4">
 		<p class="text-3xl mb-3 text-end">{selectedMember.name}</p>
 		<p class="text-end">{convertNumberToMultiples(selectedMember.Points[0].Points)} Total Points</p>
 	</section>
-	<section>
-		<h4 class="text-xl mb-3">Hourly Details</h4>
+	<section class="">
+		<h4 class="text-xl mb-3 ml-2">Hourly Details</h4>
 		<table class="table table-hover">
 			<thead>
 				<tr class="cursor-default">

@@ -5,11 +5,11 @@
 		type activeClanBattle,
 		type clansData
 	} from '$lib/get-ps99-data';
-	import { unixToDate, convertNumberToMultiples } from '$lib/utils';
+	import { unixToDate, convertNumberToMultiples, nowIsCurrent } from '$lib/utils';
 	import { getClanTotals, type dbClanTotal } from '$lib/database';
 	import { onMount, tick } from 'svelte';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { selectedClan, loadingData } from '$lib/stores';
+	import { selectedClan, loadingData, isDuringActiveClanBattle } from '$lib/stores';
 	import TablePlaceholder from './TablePlaceholder.svelte';
 
 	let recordSelectedByPoints: clansData | null = null;
@@ -68,7 +68,7 @@
 	});
 </script>
 
-<div class="m-5">
+<div class="m-2">
 	{#if $loadingData}
 		<TablePlaceholder />
 	{:else}
@@ -78,7 +78,9 @@
 					<tr>
 						<th></th>
 						<th class="text-center">Members</th>
-						<th id="clanDiamondsHeader" class="text-center">Diamonds</th>
+						{#if !$isDuringActiveClanBattle}
+							<th id="clanDiamondsHeader" class="text-center">Diamonds</th>
+						{/if}
 						<th id="clanPointsHeader" class="text-center">Points</th>
 					</tr>
 				</thead>
@@ -101,11 +103,13 @@
 									{row.Members + 1}
 								</button>
 							</td>
-							<td class="text-center cursor-default">
-								<button type="button" class="btn bg-initial cursor-default">
-									{convertNumberToMultiples(row.DepositedDiamonds)}
-								</button>
-							</td>
+							{#if !$isDuringActiveClanBattle}
+								<td class="text-center cursor-default">
+									<button type="button" class="btn bg-initial cursor-default">
+										{convertNumberToMultiples(row.DepositedDiamonds)}
+									</button>
+								</td>
+							{/if}
 							<td class="text-center">
 								<button
 									type="button"
@@ -124,6 +128,7 @@
 	{/if}
 </div>
 
+<!-- TODO: Refactor to a component -->
 <div class="card p-4 w-auto shadow-xl" data-popup="popupPointsClick">
 	<div class="card">
 		<div class="card-header">

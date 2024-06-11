@@ -4,7 +4,7 @@ export const unixToDate = (unix: number): Date => {
 };
 
 export const nowIsCurrent = (startTime: number, finishTime: number): boolean => {
-	return Date.now() >= startTime && Date.now() <= finishTime;
+	return Date.now() >= startTime * 1000 && Date.now() <= finishTime * 1000;
 };
 
 export const convertNumberToMultiples = (diamonds: number): string => {
