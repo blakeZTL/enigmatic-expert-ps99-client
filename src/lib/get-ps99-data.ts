@@ -143,15 +143,17 @@ export function getClanMemberNames(
 	usersData: robloxUserData[]
 ): ClanMemberWithName[] {
 	const members = clanData.Members;
+	members.push({ UserID: clanData.Owner, JoinTime: 0 });
 	const membersWithNames = members.map((member: ClanMember) => {
-		const userData = usersData.find((userData) => userData.id === member.UserID);
+		const userData = usersData.find(
+			(userData) => userData.id === member.UserID || userData.id === clanData.Owner
+		);
 		return {
 			...member,
 			displayName: userData ? userData.displayName : 'Unknown',
 			name: userData ? userData.name : 'Unknown'
 		};
 	});
-	console.debug('getClanMemberNames', membersWithNames);
 	return membersWithNames;
 }
 
@@ -160,16 +162,17 @@ export async function getClanMemberDiamondContibutions(
 	clanMemberNames: ClanMemberWithName[]
 ): Promise<ClanMemberWithDiamonds[]> {
 	const diamondContributions = clanData.DiamondContributions.AllTime.Data;
-	const membersWithDiamonds = diamondContributions.map((diamondContribution) => {
-		const member = clanMemberNames.find((member) => member.UserID === diamondContribution.UserID);
-		if (member) {
-			return {
-				...member,
-				Diamonds: diamondContribution.Diamonds
-			};
-		}
+	const membersWithDiamonds = clanMemberNames.map((member) => {
+		const diamondContribution = diamondContributions.find(
+			(contribution) => contribution.UserID === member.UserID
+		);
+		const diamonds = diamondContribution ? diamondContribution.Diamonds : 0;
+		return {
+			...member,
+			Diamonds: diamonds
+		};
 	});
-	return membersWithDiamonds.filter((member) => member !== undefined) as ClanMemberWithDiamonds[];
+	return membersWithDiamonds;
 }
 
 export async function getClanMemberPointContibutions(
@@ -187,6 +190,11 @@ export async function getClanMemberPointContibutions(
 					acc.push({
 						BattleID: battleId,
 						Points: pointContribution.Points
+					});
+				} else {
+					acc.push({
+						BattleID: battleId,
+						Points: 0
 					});
 				}
 				return acc;
