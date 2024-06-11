@@ -145,9 +145,7 @@ export function getClanMemberNames(
 	const members = clanData.Members;
 	members.push({ UserID: clanData.Owner, JoinTime: 0 });
 	const membersWithNames = members.map((member: ClanMember) => {
-		const userData = usersData.find(
-			(userData) => userData.id === member.UserID || userData.id === clanData.Owner
-		);
+		const userData = usersData.find((userData) => userData.id === member.UserID);
 		return {
 			...member,
 			displayName: userData ? userData.displayName : 'Unknown',
