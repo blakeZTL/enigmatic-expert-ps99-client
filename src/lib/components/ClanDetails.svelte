@@ -72,23 +72,24 @@
 	<h1 class="text-4xl text-center flex-grow">{$selectedClan}</h1>
 	<div class="btn-icon btn-icon-lg"></div>
 </div>
-<div class="my-2 mx-5 justify-end flex gap-2">
-	{#each ['Current Battle', 'Totals'] as c}
-		<button
-			class="chip {levelOfDetail === c ? 'variant-filled' : 'variant-soft'}"
-			on:click={() => {
-				section(c);
-			}}
-			on:keypress
-		>
-			{#if levelOfDetail === c}<FontAwesomeIcon icon={faCheck} />{/if}
-			<span>{c}</span>
-		</button>
-	{/each}
-</div>
+
 {#if $loadingData}
 	<TablePlaceholder />
 {:else if clanMemberFullDetails.length > 0}
+	<div class="my-2 mx-5 justify-end flex gap-2">
+		{#each ['Current Battle', 'Totals'] as c}
+			<button
+				class="chip {levelOfDetail === c ? 'variant-filled' : 'variant-soft'}"
+				on:click={() => {
+					section(c);
+				}}
+				on:keypress
+			>
+				{#if levelOfDetail === c}<FontAwesomeIcon icon={faCheck} />{/if}
+				<span>{c}</span>
+			</button>
+		{/each}
+	</div>
 	{#if levelOfDetail === 'Current Battle'}
 		<ClanMemberCurrent {clanMemberFullDetails} {activeClanBattle} {selectedPastClanDetails} />
 	{:else if levelOfDetail === 'Totals'}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { convertNumberToMultiples } from '$lib/utils';
+	import { convertNumberToMultiples, unixToDate } from '$lib/utils';
 	import type {
 		ClanMemberFullDetails,
 		activeClanBattle,
@@ -12,6 +12,7 @@
 	import { onMount } from 'svelte';
 	import ClanMemberHourlyDetails from './ClanMemberHourlyDetails.svelte';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { average } from 'firebase/firestore';
 
 	const toastStore = getToastStore();
 	const errorGettingDetailsToast: ToastSettings = {
@@ -24,12 +25,13 @@
 	let currentBattleData: ClanMemberFullDetails[] = [];
 	let errorGettingDetails = false;
 	let memberNameSearch = '';
+	let pastMemberDetails: MemberPoints[] = [];
 
 	const modalStore = getModalStore();
 
 	function showMemberDetails(member: ClanMemberFullDetails) {
 		try {
-			const pastMemberDetails: MemberPoints[] = selectedPastClanDetails
+			pastMemberDetails = selectedPastClanDetails
 				.map((clan) => ({
 					createdOn: clan.created_on,
 					points: (clan.data.Battles as unknown as Battle[])
@@ -59,6 +61,41 @@
 			console.warn(e);
 			toastStore.trigger(errorGettingDetailsToast);
 		}
+	}
+	function getMemberPastRecords(member: ClanMemberFullDetails) {
+		return (
+			selectedPastClanDetails
+				.map((clan) => {
+					let contribution = (clan.data.Battles as unknown as Battle[])
+						.filter((battle) => battle.BattleID === activeClanBattle.configName)
+						.map((battle) => battle.PointContributions)
+						.flat()
+						.filter((contribution) => contribution.UserID === member.UserID)[0];
+					return {
+						createdOn: clan.created_on,
+						points: contribution ? contribution.Points : 0
+					};
+				})
+				//10 hours ago
+				.filter(
+					(memberRecord) => memberRecord.createdOn.getTime() > new Date().getTime() - 36000000
+				)
+				.sort((a, b) => b.createdOn.getTime() - a.createdOn.getTime())
+		);
+	}
+
+	function calculatedAverageChange(memPoints: MemberPoints[]) {
+		let total = 0;
+		for (let i = 0; i < memPoints.length - 1; i++) {
+			total += memPoints[i].points - memPoints[i + 1].points;
+		}
+		return total / memPoints.length;
+	}
+
+	function calculatedTotalAverage(points: number, battleStartTime: Date) {
+		// divide total points by hours since battle start
+		let hours = (new Date().getTime() - battleStartTime.getTime()) / 3600000;
+		return points / hours;
 	}
 
 	onMount(() => {
@@ -128,6 +165,29 @@
 							</button>
 						</td>
 					</tr>
+					{#if selectedPastClanDetails.length > 0}
+						<tr>
+							<td colspan="3" class="text-end">
+								<span>
+									<span class="badge variant-soft-tertiary"
+										><i>
+											<strong>Avg.</strong>
+											{calculatedTotalAverage(
+												member.Points.reduce((total, item) => total + item.Points, 0),
+												unixToDate(activeClanBattle.configData.StartTime)
+											).toFixed(0)}
+										</i></span
+									>
+									<span class="badge variant-soft-tertiary"
+										><i
+											><strong>10 HrAvg.</strong>
+											{calculatedAverageChange(getMemberPastRecords(member)).toFixed(0)}</i
+										></span
+									>
+								</span>
+							</td>
+						</tr>
+					{/if}
 				{/each}
 			</tbody>
 		</table>
