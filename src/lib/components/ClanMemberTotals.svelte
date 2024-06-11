@@ -19,13 +19,24 @@
 		modalStore.trigger(modal);
 	}
 
+	let memberNameSearch = '';
+
 	export let clanMemberFullDetails: ClanMemberFullDetails[] = [];
 </script>
 
-<div class="mt-5 mx-2 sm:mx-auto max-w-[600px] flex justify-center">
+<div class="mt-5 mx-2 sm:mx-auto max-w-[600px] flex-col justify-center">
 	{#if $loadingData}
 		<TablePlaceholder />
 	{:else}
+		<div>
+			<input
+				class="input mb-3"
+				type="search"
+				name="clanSearch"
+				bind:value={memberNameSearch}
+				placeholder="Search..."
+			/>
+		</div>
 		<div class="table-container">
 			<table class="table table-hover">
 				<thead>
@@ -38,7 +49,9 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each clanMemberFullDetails as member, i}
+					{#each clanMemberFullDetails.filter((member) => member.name && member.name
+								.toUpperCase()
+								.includes(memberNameSearch.toUpperCase())) as member, i}
 						<!--  -->
 						<tr class="cursor-pointer">
 							<td class="p-1"
@@ -63,8 +76,11 @@
 									on:click={() => showMemberDetails(member)}
 								>
 									{convertNumberToMultiples(
-										member.Points.reduce((total, item) => total + item.Points, 0)
-									)} ({member.Points.length} battles)
+										member.Points.filter((point) => point.Points != 0).reduce(
+											(total, item) => total + item.Points,
+											0
+										)
+									)} ({member.Points.filter((point) => point.Points != 0).length} battles)
 								</button>
 							</td>
 						</tr>

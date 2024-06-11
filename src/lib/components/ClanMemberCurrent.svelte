@@ -23,6 +23,7 @@
 	export let selectedPastClanDetails: dbClan[] = [];
 	let currentBattleData: ClanMemberFullDetails[] = [];
 	let errorGettingDetails = false;
+	let memberNameSearch = '';
 
 	const modalStore = getModalStore();
 
@@ -80,6 +81,13 @@
 </script>
 
 <div class="m-5">
+	<input
+		class="input mb-3"
+		type="search"
+		name="clanSearch"
+		bind:value={memberNameSearch}
+		placeholder="Search..."
+	/>
 	<div class="table-container cursor-default">
 		<table class="table table-hover">
 			<thead>
@@ -92,7 +100,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each currentBattleData as member, i}
+				{#each currentBattleData.filter((member) => member.name && member.name
+							.toUpperCase()
+							.includes(memberNameSearch.toUpperCase())) as member, i}
 					<tr>
 						<td
 							><button type="button" class="btn bg-initial cursor-default">
