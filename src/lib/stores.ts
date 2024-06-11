@@ -22,20 +22,20 @@ export const selectedClan = writable<string>('');
 export const selectedUser = writable<string>('');
 export const loadingData = writable<boolean>(true);
 
-const activeClanBattleData = await getActiveClanBattle();
-export const currentClanBattle = readable<activeClanBattle>(
-	activeClanBattleData.data as activeClanBattle,
-	(set) => {
+export const currentClanBattle = readable<activeClanBattle>({} as activeClanBattle, (set) => {
+	getActiveClanBattle().then((activeClanBattleData) => {
 		set(activeClanBattleData.data as activeClanBattle);
-	}
-);
+	});
+});
 
 export const isDuringActiveClanBattle = readable<boolean>(false, (set) => {
-	const activeClanBattle = activeClanBattleData.data as activeClanBattle;
-	const duringActiveClanBattle = nowIsCurrent(
-		activeClanBattle.configData.StartTime,
-		activeClanBattle.configData.FinishTime
-	);
-	console.debug('isDuringActiveClanBattle', duringActiveClanBattle);
-	set(duringActiveClanBattle);
+	getActiveClanBattle().then((activeClanBattleData) => {
+		const activeClanBattle = activeClanBattleData.data as activeClanBattle;
+		const duringActiveClanBattle = nowIsCurrent(
+			activeClanBattle.configData.StartTime,
+			activeClanBattle.configData.FinishTime
+		);
+		console.debug('isDuringActiveClanBattle', duringActiveClanBattle);
+		set(duringActiveClanBattle);
+	});
 });
