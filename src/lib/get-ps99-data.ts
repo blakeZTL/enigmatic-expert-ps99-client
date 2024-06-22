@@ -4,7 +4,7 @@ export interface MemberPoints {
 }
 
 export interface robloxUserData {
-	id: number;
+	_id: number;
 	hasVerifiedBadge: boolean;
 	displayName: string;
 	name: string;
@@ -119,10 +119,21 @@ export async function getClans({
 	sortOrder = 'desc'
 }: GetPs99DataOptions = {}): Promise<ps99ApiResponse> {
 	const baseUrl = 'https://biggamesapi.io/api/clans';
-	const response = await fetch(
+	let response = await fetch(
 		`${baseUrl}?page=${page}&pageSize=${pageSize}&sort=${sort}&sortOrder=${sortOrder}`
 	);
-	return response.json();
+	const apiData = (await response.json()) as ps99ApiResponse;
+	const clanNames = (apiData.data as clansData[]).map((clan: clansData) => clan.Name);
+	while (!clanNames.includes('SOUP')) {
+		console.debug("SOUP isn't in the data, fetching more clans");
+		page++;
+		response = await fetch(
+			`${baseUrl}?page=${page}&pageSize=${pageSize}&sort=${sort}&sortOrder=${sortOrder}`
+		);
+		apiData.data = (apiData.data as clansData[]).concat((await response.json()).data);
+		clanNames.push(...(apiData.data as clansData[]).map((clan: clansData) => clan.Name));
+	}
+	return apiData;
 }
 
 export async function getActiveClanBattle(): Promise<ps99ApiResponse> {
@@ -145,7 +156,7 @@ export function getClanMemberNames(
 	const members = clanData.Members;
 	members.push({ UserID: clanData.Owner, JoinTime: 0 });
 	const membersWithNames = members.map((member: ClanMember) => {
-		const userData = usersData.find((userData) => userData.id === member.UserID);
+		const userData = usersData.find((userData) => userData._id === member.UserID);
 		return {
 			...member,
 			displayName: userData ? userData.displayName : 'Unknown',

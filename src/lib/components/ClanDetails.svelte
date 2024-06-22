@@ -43,6 +43,7 @@
 		let activeClanBattleData = await getActiveClanBattle();
 		activeClanBattle = activeClanBattleData.data as activeClanBattle;
 		let userData = await getRobloxUsers();
+		console.debug('userData', userData);
 		let robloxUserData = userData.map((user) => user.data as robloxUserData);
 		let clanMembers = getClanMemberNames(currentClanDetails, robloxUserData);
 		let clanMemberDiamonds = await getClanMemberDiamondContibutions(

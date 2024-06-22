@@ -73,9 +73,11 @@
 		pastClanTotals = await getClanTotals();
 		const currentClansData = await getClans();
 		currentClanTotals = currentClansData.data as clansData[];
+		//sort by points desc then deposited diamonds desc
+		currentClanTotals.sort(
+			(a, b) => b.Points - a.Points || b.DepositedDiamonds - a.DepositedDiamonds
+		);
 		clanNames.set(currentClanTotals.map((clan) => clan.Name));
-		console.debug(clanNamesAutocomplete);
-		console.debug($clanNames);
 
 		const activeClanBattleData = await getActiveClanBattle();
 		currentClanBattle = activeClanBattleData.data as activeClanBattle;
