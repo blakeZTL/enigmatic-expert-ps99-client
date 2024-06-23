@@ -28,9 +28,9 @@ export async function getRobloxUsers(): Promise<dbRobloxUser[]> {
 	let robloxUsers: dbRobloxUser[] = [];
 	try {
 		const url =
-			process.env.NODE_ENV === 'production'
-				? `${import.meta.env.VITE_PROD_ENDPOINT}/roblox-users`
-				: 'http://localhost:8000/roblox-users';
+			process.env.NODE_ENV === 'development'
+				? 'http://localhost:8000/clan-totals'
+				: `${import.meta.env.VITE_PROD_ENDPOINT}/roblox-users`;
 		const response = await fetch(url);
 		const data = await response.json();
 		robloxUsers = data.map((doc: dbRobloxUser) => {
@@ -48,9 +48,9 @@ export async function getClanTotals(): Promise<dbClanTotal[]> {
 	let clanTotals: dbClanTotal[] = [];
 	try {
 		const url =
-			process.env.NODE_ENV === 'production'
-				? `${import.meta.env.VITE_PROD_ENDPOINT}/clan-totals`
-				: 'http://localhost:8000/clan-totals';
+			process.env.NODE_ENV === 'development'
+				? 'http://localhost:8000/clan-totals'
+				: `${import.meta.env.VITE_PROD_ENDPOINT}/clan-totals`;
 		const response = await fetch(url);
 		const data = await response.json();
 		console.debug('Fetched clan totals:', data);
@@ -69,9 +69,9 @@ export async function getClanDetails(clanName: string): Promise<dbClan[]> {
 	let clanDetails: dbClan[] = [];
 	try {
 		const url =
-			process.env.NODE_ENV === 'production'
-				? `${import.meta.env.VITE_PROD_ENDPOINT}/clans/${clanName}`
-				: `http://localhost:8000/clans/${clanName}`;
+			process.env.NODE_ENV === 'development'
+				? 'http://localhost:8000/clan-totals'
+				: `${import.meta.env.VITE_PROD_ENDPOINT}/clans/${clanName}`;
 		const response = await fetch(url);
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
