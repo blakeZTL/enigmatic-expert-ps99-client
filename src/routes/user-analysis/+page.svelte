@@ -1,17 +1,16 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { onMount, tick } from 'svelte';
-	import { InputChip, Autocomplete, popup } from '@skeletonlabs/skeleton';
-	import type { AutocompleteOption, PopupSettings } from '@skeletonlabs/skeleton';
+	import { InputChip, Autocomplete } from '@skeletonlabs/skeleton';
+	import type { AutocompleteOption } from '@skeletonlabs/skeleton';
 	import type {
 		robloxUserData,
-		ps99ApiResponse,
 		clanData,
 		Battles,
 		Battle,
 		PointContribution
 	} from '$lib/get-ps99-data';
-	import { getClans, getClan } from '$lib/get-ps99-data';
+	import { getClan } from '$lib/get-ps99-data';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	import { convertNumberToMultiples } from '$lib/utils';
@@ -33,22 +32,19 @@
 
 	onMount(async () => {
 		await tick();
-		//const clansResponse = await getClans(1, 1000, 'Points', 'desc');
-		isLoadingClans = false;
 	});
 	let robloxUserInput = '';
 	let robloxUser: apiRobloxUser;
 	async function getRobloxUserByUserName(userName: string) {
-		const userArray = userName.split(',');
 		const url =
 			process.env.NODE_ENV === 'development'
 				? 'http://localhost:8000/roblox-users/username/'
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/roblox-users/username/`;
 		const response = await fetch(url + userName);
 
-		const data = (await response.json()) as { data: apiRobloxUser[] };
+		const data = await response.json();
 		if (data) {
-			robloxUser = data;
+			robloxUser = data as apiRobloxUser;
 			console.debug('robloxUser', robloxUser);
 		}
 	}
@@ -58,7 +54,7 @@
 		for (const battleID in battles) {
 			const battle = battles[battleID];
 			const userContribution = battle.PointContributions.find(
-				(contribution) => contribution.UserID === userId
+				(contribution: PointContribution) => contribution.UserID === userId
 			);
 
 			if (userContribution) {
@@ -80,9 +76,7 @@
 	$: console.debug('selectedClans', selectedClans);
 
 	const userNotFoundInClanToast: ToastSettings = {
-		title: 'User Not Found',
-		message: `User ${robloxUser?.name} did not contribute to any battles or deposit diamonds in this clan.`,
-		type: 'error'
+		message: `User ${robloxUser ? robloxUser.name : 'Unknown'} did not contribute to any battles or deposit diamonds in this clan.`
 	};
 
 	const addClan = async (clanName: string) => {
@@ -93,20 +87,25 @@
 		}
 		console.debug('addClan', clanName);
 		isLoadingClans = true;
-		clanOptions = clanOptions.filter((option) => !selectedClans.includes(clanName));
+		clanOptions = clanOptions.filter((clanName) => !selectedClans.includes(clanName.value));
 		const selectedClanData = await getClan(clanName);
 		if (selectedClanData) {
 			const clanData = selectedClanData.data as clanData;
-			const didContributeDiamonds = clanData.DiamondContributions.AllTime.Data.map(
-				(contribution) => contribution.UserID
-			).includes(robloxUser.id);
+			let didContributeDiamonds = false;
+			if (robloxUser) {
+				didContributeDiamonds = clanData.DiamondContributions.AllTime.Data.map(
+					(contribution) => contribution.UserID
+				).includes(robloxUser.id);
+			}
 			console.debug('didContributeDiamonds for ' + clanName, didContributeDiamonds);
-			const battlesWithUser = findUserInBattle(robloxUser.id, clanData.Battles);
-			console.debug('battlesWithUser', battlesWithUser);
+			const battlesWithUser = [];
+			if (robloxUser) {
+				battlesWithUser = findUserInBattle(robloxUser.id, clanData.Battles);
+			}
 			if (battlesWithUser.length > 0 || didContributeDiamonds) {
 				usersClanData = [...usersClanData, clanData];
 				const lowerCasedSelectedClans = selectedClans.map((clan) => clan.toLowerCase());
-				if (!selectedClans.includes(clanName.toLowerCase())) {
+				if (!lowerCasedSelectedClans.includes(clanName.toLowerCase())) {
 					selectedClans = [...selectedClans, clanName];
 				}
 			} else {
@@ -123,7 +122,10 @@
 		const clanName = event.detail.value.toUpperCase();
 		if (!selectedClans.includes(clanName)) {
 			await addClan(clanName);
-			document.querySelector('.selectedClanChips').focus();
+			const clanChipInput = document.querySelector('.selectedClanChips') as HTMLInputElement;
+			if (clanChipInput) {
+				clanChipInput.focus();
+			}
 		}
 	}
 
@@ -150,7 +152,7 @@
 	let userAnalysisData: UserAnalysisData[] = [];
 	const runUserAnalysis = (user: apiRobloxUser, clans: clanData[]): void => {
 		console.debug('runUserAnalysis', user, clans);
-		const userAnalysis: UserAnalysisData[] = clans.forEach((clan) => {
+		clans.forEach((clan) => {
 			const clanName = clan.Name;
 			const rankedDiamondContribution: UserDiamondContribution =
 				clan.DiamondContributions.AllTime.Data.sort((a, b) => b.Diamonds - a.Diamonds)
@@ -196,9 +198,7 @@
 		console.debug('userAnalysisData', userAnalysisData);
 		analysisComplete = true;
 		toastStore.trigger({
-			title: 'Analysis Complete',
-			message: `Analysis for ${user.name} complete.`,
-			type: 'success'
+			message: `Analysis for ${user.name} complete.`
 		});
 	};
 
@@ -254,7 +254,10 @@
 				on:add={async () => {
 					if (!selectedClans.includes(clanInput.toUpperCase())) {
 						await addClan(clanInput.toUpperCase());
-						document.querySelector('.selectedClanChips').focus();
+						const clanInputChip = document.querySelector('.selectedClanChips');
+						if (clanInputChip) {
+							clanInputChip.focus();
+						}
 					}
 				}}
 				on:keypress={(event) => {
@@ -286,7 +289,7 @@
 		{/if}
 	{/if}
 	{#if userAnalysisData.length > 0 && analysisComplete}
-		<h2 class="text-2xl">{robloxUser.name}</h2>
+		<h2 class="text-2xl">{robloxUser ? robloxUser.name : 'Unknown'}</h2>
 		<p><i>If user didn't finish clan battle with a clan, data will not be present</i></p>
 		{#each userAnalysisData as analysis}
 			<div class="card p-5 flex flex-col gap-3">
