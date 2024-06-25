@@ -53,7 +53,6 @@ export async function getClanTotals(): Promise<dbClanTotal[]> {
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/clan-totals`;
 		const response = await fetch(url);
 		const data = await response.json();
-		console.debug('Fetched clan totals:', data);
 		clanTotals = data.map((doc: dbClanTotal) => {
 			const data = doc;
 			return { id: doc._id, created_on: parse_id_for_date(doc._id), data: data };
@@ -77,7 +76,6 @@ export async function getClanDetails(clanName: string): Promise<dbClan[]> {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 		const data = await response.json();
-		console.debug(data);
 		clanDetails = data.map((doc: dbClan) => {
 			const data = doc;
 			return { id: doc._id, created_on: parse_id_for_date(doc._id), data: data };
