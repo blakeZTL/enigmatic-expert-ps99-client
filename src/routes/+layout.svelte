@@ -56,7 +56,14 @@
 	{#if $drawerStore.id === 'nav-drawer'}
 		<div class="flex mx-5 my-3 gap-8 items-center">
 			<!-- <span class="text-lg">Switch Themes </span> -->
-			<LightSwitch />
+			<a
+				class="btn icon variant-ghost-surface"
+				href="https://github.com/blakeZTL/enigmatic-expert-ps99-client"
+				target="_blank"
+				rel="noreferrer"
+			>
+				<FontAwesomeIcon icon={faGithub} class="mr-3" /> Github
+			</a>
 		</div>
 		<h1 class="text-2xl p-5">Navigation</h1>
 		<nav class="p-5">
@@ -101,14 +108,7 @@
 				<strong class="text-xl uppercase">Clan Battle Stats</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<a
-					class="btn icon variant-ghost-surface"
-					href="https://github.com/blakeZTL/enigmatic-expert-ps99-client"
-					target="_blank"
-					rel="noreferrer"
-				>
-					<FontAwesomeIcon icon={faGithub} />
-				</a>
+				<LightSwitch />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
