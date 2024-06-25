@@ -105,19 +105,19 @@ export interface ps99ApiResponse {
 	data: clansData[] | activeClanBattle | clanData;
 }
 
-interface GetPs99DataOptions {
-	page?: number;
-	pageSize?: number;
-	sort?: string;
-	sortOrder?: string;
-}
+// interface GetPs99DataOptions {
+// 	page?: number;
+// 	pageSize?: number;
+// 	sort?: string;
+// 	sortOrder?: string;
+// }
 
-export async function getClans({
+export async function getClans(
 	page = 1,
 	pageSize = 100,
 	sort = 'Points',
 	sortOrder = 'desc'
-}: GetPs99DataOptions = {}): Promise<ps99ApiResponse> {
+): Promise<ps99ApiResponse> {
 	const baseUrl = 'https://biggamesapi.io/api/clans';
 	let response = await fetch(
 		`${baseUrl}?page=${page}&pageSize=${pageSize}&sort=${sort}&sortOrder=${sortOrder}`
@@ -153,6 +153,7 @@ export function getClanMemberNames(
 	clanData: clanData,
 	usersData: robloxUserData[]
 ): ClanMemberWithName[] {
+	console.debug('getClanMemberNames', usersData);
 	const members = clanData.Members;
 	members.push({ UserID: clanData.Owner, JoinTime: 0 });
 	const membersWithNames = members.map((member: ClanMember) => {

@@ -29,7 +29,7 @@ export async function getRobloxUsers(): Promise<dbRobloxUser[]> {
 	try {
 		const url =
 			process.env.NODE_ENV === 'development'
-				? 'http://localhost:8000/clan-totals'
+				? 'http://localhost:8000/roblox-users'
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/roblox-users`;
 		const response = await fetch(url);
 		const data = await response.json();
@@ -43,7 +43,6 @@ export async function getRobloxUsers(): Promise<dbRobloxUser[]> {
 	}
 	return robloxUsers;
 }
-//TODO: Need to only fetch clan totals for the active clan battle
 export async function getClanTotals(): Promise<dbClanTotal[]> {
 	let clanTotals: dbClanTotal[] = [];
 	try {
@@ -53,12 +52,10 @@ export async function getClanTotals(): Promise<dbClanTotal[]> {
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/clan-totals`;
 		const response = await fetch(url);
 		const data = await response.json();
-		console.debug('Fetched clan totals:', data);
 		clanTotals = data.map((doc: dbClanTotal) => {
 			const data = doc;
 			return { id: doc._id, created_on: parse_id_for_date(doc._id), data: data };
 		});
-		console.log('Fetched clan totals:');
 	} catch (error) {
 		console.error('Failed to fetch clan totals', error);
 	}
@@ -70,14 +67,13 @@ export async function getClanDetails(clanName: string): Promise<dbClan[]> {
 	try {
 		const url =
 			process.env.NODE_ENV === 'development'
-				? 'http://localhost:8000/clan-totals'
+				? `http://localhost:8000/clans/${clanName}`
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/clans/${clanName}`;
 		const response = await fetch(url);
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 		const data = await response.json();
-		console.debug(data);
 		clanDetails = data.map((doc: dbClan) => {
 			const data = doc;
 			return { id: doc._id, created_on: parse_id_for_date(doc._id), data: data };
