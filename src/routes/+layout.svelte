@@ -54,6 +54,9 @@
 <Toast />
 <Drawer>
 	{#if $drawerStore.id === 'nav-drawer'}
+		<div class="flex m-5 gap-8 items-center">
+			<span class="text-lg">Switch Themes </span><LightSwitch />
+		</div>
 		<h1 class="text-2xl p-5">Navigation</h1>
 		<nav class="p-5">
 			<ul class="text-xl flex flex-col gap-y-5">
@@ -97,7 +100,6 @@
 				<strong class="text-xl uppercase">Clan Battle Stats</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<LightSwitch />
 				<a
 					class="btn icon variant-ghost-surface"
 					href="https://github.com/blakeZTL/enigmatic-expert-ps99-client"
