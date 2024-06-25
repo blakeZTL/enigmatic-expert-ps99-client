@@ -54,8 +54,9 @@
 <Toast />
 <Drawer>
 	{#if $drawerStore.id === 'nav-drawer'}
-		<div class="flex m-5 gap-8 items-center">
-			<span class="text-lg">Switch Themes </span><LightSwitch />
+		<div class="flex mx-5 my-3 gap-8 items-center">
+			<!-- <span class="text-lg">Switch Themes </span> -->
+			<LightSwitch />
 		</div>
 		<h1 class="text-2xl p-5">Navigation</h1>
 		<nav class="p-5">
