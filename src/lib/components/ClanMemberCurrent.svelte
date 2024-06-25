@@ -12,7 +12,6 @@
 	import { onMount } from 'svelte';
 	import ClanMemberHourlyDetails from './ClanMemberHourlyDetails.svelte';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
-	import { average } from 'firebase/firestore';
 
 	const toastStore = getToastStore();
 	const errorGettingDetailsToast: ToastSettings = {
@@ -63,6 +62,7 @@
 		}
 	}
 	function getMemberPastRecords(member: ClanMemberFullDetails) {
+		if (!selectedPastClanDetails) return [];
 		return (
 			selectedPastClanDetails
 				.map((clan) => {
