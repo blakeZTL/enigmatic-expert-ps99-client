@@ -32,7 +32,7 @@ export interface activeClanBattle {
 	configData: clanBattleConifgData;
 }
 
-interface PointContribution {
+export interface PointContribution {
 	UserID: number;
 	Points: number;
 }
@@ -46,7 +46,7 @@ export interface Battle {
 	EarnedMedal?: string;
 }
 
-interface Battles {
+export interface Battles {
 	[key: string]: Battle;
 }
 
