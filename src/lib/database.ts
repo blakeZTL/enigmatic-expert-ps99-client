@@ -29,7 +29,7 @@ export async function getRobloxUsers(): Promise<dbRobloxUser[]> {
 	try {
 		const url =
 			process.env.NODE_ENV === 'development'
-				? 'http://localhost:8000/clan-totals'
+				? 'http://localhost:8000/roblox-users'
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/roblox-users`;
 		const response = await fetch(url);
 		const data = await response.json();
@@ -70,7 +70,7 @@ export async function getClanDetails(clanName: string): Promise<dbClan[]> {
 	try {
 		const url =
 			process.env.NODE_ENV === 'development'
-				? 'http://localhost:8000/clan-totals'
+				? `http://localhost:8000/clans/${clanName}`
 				: `${import.meta.env.VITE_PROD_ENDPOINT}/clans/${clanName}`;
 		const response = await fetch(url);
 		if (!response.ok) {
