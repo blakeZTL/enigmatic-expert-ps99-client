@@ -95,7 +95,7 @@
 	});
 </script>
 
-<div class="m-2">
+<div class="m-3">
 	{#if $loadingData}
 		<TablePlaceholder />
 	{:else}
@@ -116,58 +116,65 @@
 				on:selection={searchClanName}
 			/>
 		</div> -->
-		<div class="table-container">
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th></th>
-						<th class="text-center">Members</th>
-						{#if !$isDuringActiveClanBattle}
-							<th id="clanDiamondsHeader" class="text-center">Diamonds</th>
-						{/if}
-						<th id="clanPointsHeader" class="text-center">Points</th>
-					</tr>
-				</thead>
-
-				<tbody>
-					{#each currentClanTotals.filter((clan) => clan.Name && clan.Name.toUpperCase().includes(clanNameSearch.toUpperCase())) as row, i}
-						<!--  -->
+		<div class="flex flex-col h-screen">
+			<div class="flex-grow overflow-auto">
+				<table class="relative w-full">
+					<thead>
 						<tr>
-							<td class="text-center w-44">
-								{i + 1}.
-								<button
-									class="btn bg-gradient-to-br variant-gradient-secondary-primary ml-3"
-									on:click={() => selectClan(row.Name)}
-								>
-									{row.Name}
-								</button>
-							</td>
-							<td class="text-center cursor-default w-44">
-								<button type="button" class="btn bg-initial cursor-default">
-									{row.Members + 1}
-								</button>
-							</td>
+							<th class="custom-header variant-glass-primary"></th>
+							<th class="custom-header variant-glass-primary"></th>
+							<th class="text-center custom-header variant-glass-primary">Members</th>
 							{#if !$isDuringActiveClanBattle}
-								<td class="text-center cursor-default">
-									<button type="button" class="btn bg-initial cursor-default">
-										{convertNumberToMultiples(row.DepositedDiamonds)}
-									</button>
-								</td>
-							{/if}
-							<td class="text-center">
-								<button
-									type="button"
-									class="btn btn-sm variant-ghost-primary"
-									use:popup={popupPointsClick}
-									on:click={() => (recordSelectedByPoints = row)}
+								<th id="clanDiamondsHeader" class="custom-header variant-glass-primary text-center"
+									>Diamonds</th
 								>
-									{convertNumberToMultiples(row.Points)}</button
-								></td
+							{/if}
+							<th id="clanPointsHeader" class="text-center variant-glass-primary custom-header"
+								>Points</th
 							>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+
+					<tbody>
+						{#each currentClanTotals.filter((clan) => clan.Name && clan.Name.toUpperCase().includes(clanNameSearch.toUpperCase())) as row, i}
+							<!--  -->
+							<tr>
+								<td class="w-10 text-end">{i + 1}.</td>
+								<td class="text-left w-44">
+									<button
+										class="btn bg-gradient-to-br variant-gradient-secondary-primary ml-3"
+										on:click={() => selectClan(row.Name)}
+									>
+										{row.Name}
+									</button>
+								</td>
+								<td class="text-center cursor-default">
+									<button type="button" class="btn bg-initial cursor-default">
+										{row.Members + 1}
+									</button>
+								</td>
+								{#if !$isDuringActiveClanBattle}
+									<td class="text-center cursor-default">
+										<button type="button" class="btn bg-initial cursor-default">
+											{convertNumberToMultiples(row.DepositedDiamonds)}
+										</button>
+									</td>
+								{/if}
+								<td class="text-center">
+									<button
+										type="button"
+										class="btn btn-sm variant-ghost-primary"
+										use:popup={popupPointsClick}
+										on:click={() => (recordSelectedByPoints = row)}
+									>
+										{convertNumberToMultiples(row.Points)}</button
+									></td
+								>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -230,4 +237,16 @@
 </div>
 
 <style>
+	td,
+	th {
+		line-height: 1.5;
+	}
+	tr {
+		height: 60px;
+	}
+	.custom-header {
+		position: sticky;
+		top: 0;
+		padding: 1rem;
+	}
 </style>
