@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, LightSwitch } from '@skeletonlabs/skeleton';
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -12,7 +12,12 @@
 	import typescript from 'highlight.js/lib/languages/typescript';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
-	import { faBars, faChartBar, faMagnifyingGlassChart } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faBars,
+		faChartBar,
+		faMagnifyingGlassChart,
+		faCircleHalfStroke
+	} from '@fortawesome/free-solid-svg-icons';
 
 	hljs.registerLanguage('xml', xml); // for HTML
 	hljs.registerLanguage('css', css);
@@ -92,6 +97,7 @@
 				<strong class="text-xl uppercase">Clan Battle Stats</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<LightSwitch />
 				<a
 					class="btn icon variant-ghost-surface"
 					href="https://github.com/blakeZTL/enigmatic-expert-ps99-client"
