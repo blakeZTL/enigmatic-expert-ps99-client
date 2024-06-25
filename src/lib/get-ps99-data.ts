@@ -153,6 +153,7 @@ export function getClanMemberNames(
 	clanData: clanData,
 	usersData: robloxUserData[]
 ): ClanMemberWithName[] {
+	console.debug('getClanMemberNames', usersData);
 	const members = clanData.Members;
 	members.push({ UserID: clanData.Owner, JoinTime: 0 });
 	const membersWithNames = members.map((member: ClanMember) => {
