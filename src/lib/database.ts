@@ -43,7 +43,6 @@ export async function getRobloxUsers(): Promise<dbRobloxUser[]> {
 	}
 	return robloxUsers;
 }
-//TODO: Need to only fetch clan totals for the active clan battle
 export async function getClanTotals(): Promise<dbClanTotal[]> {
 	let clanTotals: dbClanTotal[] = [];
 	try {
@@ -57,7 +56,6 @@ export async function getClanTotals(): Promise<dbClanTotal[]> {
 			const data = doc;
 			return { id: doc._id, created_on: parse_id_for_date(doc._id), data: data };
 		});
-		console.log('Fetched clan totals:');
 	} catch (error) {
 		console.error('Failed to fetch clan totals', error);
 	}
